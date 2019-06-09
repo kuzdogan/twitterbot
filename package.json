@@ -1,0 +1,28 @@
+{
+  "name": "twit-bot",
+  "version": "1.0.0",
+  "description": "A twitter bot for posting curated images and videos from the series Sıfırbir  ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kuzdogan/twitterbot.git"
+  },
+  "keywords": [
+    "twitter",
+    "bot",
+    "node"
+  ],
+  "author": "kuzdogan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kuzdogan/twitterbot/issues"
+  },
+  "homepage": "https://github.com/kuzdogan/twitterbot#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "twitter": "^1.7.1"
+  }
+}
