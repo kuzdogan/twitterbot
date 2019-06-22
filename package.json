@@ -23,6 +23,7 @@
   "homepage": "https://github.com/kuzdogan/twitterbot#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "mongoose": "^5.6.0",
     "twitter": "^1.7.1"
   }
 }
