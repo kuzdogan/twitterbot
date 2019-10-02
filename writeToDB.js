@@ -1,6 +1,8 @@
 const path = require('path');
 const fs = require('fs');
 const mongoose = require('mongoose');
+const SceneModel =  require('./models/Scene').SceneModel;
+const ImageModel =  require('./models/Image').ImageModel;
 
 const IMAGE_PATH = path.join(__dirname, 'assets', 'images');
 const DB_URL = 'mongodb://localhost/test';
@@ -15,33 +17,6 @@ db.once('open', function() {
   // we're connected!
 });
 
-// Define Schemas
-/**
- * ImageSchema represents a screenshot image 
- * name: The name of the image. In our case images are named with the following pattern:
- *  <image-name>-<scene-number> 
- *  scene-number is between 1 and 4 as a single tweet has max 4 images
- * 
- *  Example: 
- *    1-1 first image of the first scene
- *    2-4 fourth image of the second scene
- */
-var ImageSchema = new mongoose.Schema({
-  name: String,
-  data: Buffer, 
-  contentType: String,
-})
-/**
- * Scenes consist of ImageSchemas
- * We also hold a value posted to not post an already posted Scene again
- */
-var SceneSchema = new mongoose.Schema({
-  scenes: [ImageSchema],
-  posted: Boolean
-});
-
-var Scene = db.model('Scene', SceneSchema);
-var Image = db.model('Image', ImageSchema);
 
 writeScenesInPath(IMAGE_PATH);
 /**
@@ -57,12 +32,12 @@ function writeScenesInPath(IMAGE_PATH) {
       var filePath = path.join(IMAGE_PATH, files[i])
       var fileName = files[i];
       // Create a scene
-      var newScene = new Scene();
+      var newScene = new SceneModel();
       console.log('Adding scene')
       var imgArr = [] // Hold images in an array
       
       // Add first Image by default
-      var newImage = new Image();
+      var newImage = new ImageModel();
       console.log('Adding image ' + fileName)
       newImage.name = files[i];
       newImage.data = fs.readFileSync(filePath);
@@ -82,7 +57,7 @@ function writeScenesInPath(IMAGE_PATH) {
         i++;
         filePath = path.join(IMAGE_PATH, files[i])
         fileName = files[i];
-        subImage = new Image();
+        subImage = new ImageModel();
         console.log('Adding image ' + fileName)
         console.log(`i is ${i}`);
         subImage.name = files[i];
