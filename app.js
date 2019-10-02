@@ -22,26 +22,21 @@ db.once('open', function() {
   // we're connected!
 });
 
-// setInterval( () => {
 //   getRandomScene().then( (scene) => {
 //     console.log(scene);
 //   });
+// setInterval( () => {
+  getRandomScene().then( (scene) => {
+    // var image = scene.scenes[0];
+    let length = scene.scenes.length;
+    console.log('Scene length is: ' + length);
+    if (length == 1) {
+      postSceneWithSingleMedia(scene);
+    } else {
+      postSceneWithMultipleImages(scene);
+    }
+  })
 // }, 5 * 1000)
-
-getRandomScene().then( (scene) => {
-  var image = scene.scenes[0];
-  // console.log(image);
-  var mediaData = image.data
-  let buff = Buffer.from(image.data, 'base64');
-  var mediaType = image.contentType
-  var mediaSize = buff.byteLength;
-  console.log('Got the image data');
-  // console.log(mediaData);
-  
-  console.log(mediaType);
-  console.log(mediaSize);
-  postTweetWithImage(mediaType, mediaData, mediaSize)
-})
 
 /**
  * @function to get a random scene
@@ -50,40 +45,47 @@ getRandomScene().then( (scene) => {
 function getRandomScene() {
   return SceneModel.countDocuments().then( (count) => {
     // Get a random entry
-    var random = Math.floor(Math.random() * count)
+    let random = 7
     console.log('Random: ' + random);
     return SceneModel.findOne({posted: false}).skip(random);
   });
 }
 
-// var image = fs.readFileSync('test.jpg');
-// // postTweetWithImage(image);
-// console.log(image);
-const image = 'test.jpg';
-const mediaType   = 'image/jpg'; // `'video/mp4'` is also supported
-const mediaData   = require('fs').readFileSync(image).toString('base64');
-const mediaSize    = require('fs').statSync(image).size;
-
-// postTweetWithImage(mediaType, mediaData, mediaSize);
-
-function postTweetWithImage(mediaType, mediaData, mediaSize) {
-  twitterMedia.initUpload(mediaSize, mediaType) // Declare that you wish to upload some media
-  .then( (mediaId) => twitterMedia.appendUpload(mediaId, mediaData)) // Send the data for the media
-  .then(twitterMedia.finalizeUpload) // Declare that you are done uploading chunks
-  .then(mediaId => {
-    // You now have an uploaded movie/animated gif
-    // that you can reference in Tweets, e.g. `update/statuses`
-    // will take a `mediaIds` param.
-    // Lets tweet it
-    var status = {
-      status: 'I am a tweet',
+function postSceneWithSingleMedia(scene) {
+  let media = scene.scenes[0];
+  let mediaData = media.data
+  let buff = Buffer.from(media.data, 'base64');
+  let mediaType = media.contentType
+  let mediaSize = buff.byteLength;
+  twitterMedia.uploadSingleMedia(mediaType, mediaSize, mediaData).then( (mediaId) => {
+    // Make post request on media endpoint. 
+    let status = {
       media_ids: mediaId // Pass the media id string
     }
+    twitterMedia.makePost('statuses/update', status).then( () =>
+      console.log('Sent a Tweet!')
+    )
+  })
+}
 
-    T.post('statuses/update', status, function(error, tweet, response) {
-      if (!error) {
-        console.log(tweet);
-      }
-    });
-  });
+function postSceneWithMultipleImages(scene) {
+  let promiseArr = [];
+  for (let i = 0; i < scene.scenes.length; i++) {
+    let image = scene.scenes[i];
+    let mediaData = image.data
+    let buff = Buffer.from(image.data, 'base64');
+    let mediaType = image.contentType
+    let mediaSize = buff.byteLength;
+    let promise = twitterMedia.uploadSingleMedia(mediaType, mediaSize, mediaData);
+    promiseArr.push(promise);
+  }
+  Promise.all(promiseArr).then( (mediaIds) => {
+    let mediaIdsStr = mediaIds.join();
+    let status = {
+      media_ids: mediaIdsStr // Pass the media id string
+    }
+    twitterMedia.makePost('statuses/update', status).then( () =>
+      console.log('Sent a tweet with multiple images!')
+    );
+  })
 }
