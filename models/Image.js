@@ -12,7 +12,7 @@ const mongoose = require('mongoose');
  */
 const ImageSchema = new mongoose.Schema({
   name: String,
-  data: Buffer, 
+  data: String, 
   contentType: String,
 })
 

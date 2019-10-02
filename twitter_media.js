@@ -23,7 +23,7 @@ const T = new Twitter(config);
     return makePost('media/upload', {
       command      : 'APPEND',
       media_id     : mediaId,
-      media        : mediaData,
+      media_data   : mediaData,
       segment_index: 0
     }).then(data => mediaId);
   }

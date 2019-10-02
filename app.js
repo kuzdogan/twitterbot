@@ -28,11 +28,20 @@ db.once('open', function() {
 //   });
 // }, 5 * 1000)
 
-// getRandomScene().then( (scene) => {
-//   var image = scene.scenes[0];
-//   console.log('Got the image data');
-//   postTweetWithImage(image);
-// })
+getRandomScene().then( (scene) => {
+  var image = scene.scenes[0];
+  // console.log(image);
+  var mediaData = image.data
+  let buff = Buffer.from(image.data, 'base64');
+  var mediaType = image.contentType
+  var mediaSize = buff.byteLength;
+  console.log('Got the image data');
+  // console.log(mediaData);
+  
+  console.log(mediaType);
+  console.log(mediaSize);
+  postTweetWithImage(mediaType, mediaData, mediaSize)
+})
 
 /**
  * @function to get a random scene
@@ -51,12 +60,13 @@ function getRandomScene() {
 // // postTweetWithImage(image);
 // console.log(image);
 const image = 'test.jpg';
-const mediaType   = 'image/jpeg'; // `'video/mp4'` is also supported
-const mediaData   = require('fs').readFileSync(image);
+const mediaType   = 'image/jpg'; // `'video/mp4'` is also supported
+const mediaData   = require('fs').readFileSync(image).toString('base64');
 const mediaSize    = require('fs').statSync(image).size;
-postTweetWithImage(image, mediaType, mediaData, mediaSize);
 
-function postTweetWithImage(image, mediaType, mediaData, mediaSize) {
+// postTweetWithImage(mediaType, mediaData, mediaSize);
+
+function postTweetWithImage(mediaType, mediaData, mediaSize) {
   twitterMedia.initUpload(mediaSize, mediaType) // Declare that you wish to upload some media
   .then( (mediaId) => twitterMedia.appendUpload(mediaId, mediaData)) // Send the data for the media
   .then(twitterMedia.finalizeUpload) // Declare that you are done uploading chunks
@@ -67,7 +77,7 @@ function postTweetWithImage(image, mediaType, mediaData, mediaSize) {
     // Lets tweet it
     var status = {
       status: 'I am a tweet',
-      media_ids: mediaId +','+ mediaId // Pass the media id string
+      media_ids: mediaId // Pass the media id string
     }
 
     T.post('statuses/update', status, function(error, tweet, response) {

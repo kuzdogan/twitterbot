@@ -40,7 +40,7 @@ function writeScenesInPath(IMAGE_PATH) {
       var newImage = new ImageModel();
       console.log('Adding image ' + fileName)
       newImage.name = files[i];
-      newImage.data = fs.readFileSync(filePath);
+      newImage.data = fs.readFileSync(filePath).toString('base64');
       var base = path.parse(filePath).name
       var ext = path.parse(filePath).ext
       newImage.contentType = 'image/' + ext.slice(1);
@@ -61,7 +61,7 @@ function writeScenesInPath(IMAGE_PATH) {
         console.log('Adding image ' + fileName)
         console.log(`i is ${i}`);
         subImage.name = files[i];
-        subImage.data = fs.readFileSync(filePath);
+        subImage.data = fs.readFileSync(filePath).toString('base64');
         ext = path.extname(filePath)
         subImage.contentType = 'image/' + ext.slice(1);
         imgArr.push(subImage);
