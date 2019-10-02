@@ -57,7 +57,19 @@ const T = new Twitter(config);
       });
     });
   }
+  /**
+   * @function to upload a media to the Twitter server
+   * @param String mediaType  'image/jpg' or 'video/mp4' etc.
+   * @param Number mediaSize  media size in bytes
+   * @param String base64 data of the media
+   * @returns {Promise} resolving to a mediaId
+   */
+  function uploadSingleMedia(mediaType, mediaSize, mediaData) {
+    return initUpload(mediaSize, mediaType) // Declare that you wish to upload some media
+    .then( (mediaId) => appendUpload(mediaId, mediaData)) // Send the data for the media
+    .then(finalizeUpload) // Declare that you are done uploading chunks
+  }
 
   module.exports = {
-    initUpload, appendUpload, finalizeUpload, makePost
+    initUpload, appendUpload, finalizeUpload, makePost, uploadSingleMedia
   }
