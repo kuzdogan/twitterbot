@@ -40,6 +40,8 @@ getRandomScene().then( (scene) => {
 
 /**
  * @function to get a random scene
+ * 
+ * 
  * @returns {Promise} with the Scene found
  */
 function getRandomScene() {
