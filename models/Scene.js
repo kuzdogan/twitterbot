@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
-const Image = require('./Image');
+const Media = require('./Media');
 
 /**
  * Scenes consist of ImageSchemas
  * We also hold a value posted to not post an already posted Scene again
  */
 const SceneSchema = new mongoose.Schema({
-  scenes: [Image.ImageSchema],
+  scenes: [Media.MediaSchema],
   posted: Boolean
 });
 

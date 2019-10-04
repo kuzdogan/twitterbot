@@ -23,7 +23,9 @@
   "homepage": "https://github.com/kuzdogan/twitterbot#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "gridfs-stream": "^1.1.1",
     "mongoose": "^5.6.0",
-    "twitter": "^1.7.1"
+    "twitter": "^1.7.1",
+    "var": "^0.3.2"
   }
 }

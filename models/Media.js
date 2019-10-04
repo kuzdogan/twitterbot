@@ -10,11 +10,11 @@ const mongoose = require('mongoose');
  *    1-1 first image of the first scene
  *    2-4 fourth image of the second scene
  */
-const ImageSchema = new mongoose.Schema({
+const MediaSchema = new mongoose.Schema({
   name: String,
-  data: String, 
-  contentType: String,
+  // data: String, 
+  mediaType: String,
 })
 
-exports.ImageSchema = ImageSchema;
-exports.ImageModel = mongoose.model('Image', ImageSchema);
+exports.MediaSchema = MediaSchema;
+exports.MediaModel = mongoose.model('Media', MediaSchema);

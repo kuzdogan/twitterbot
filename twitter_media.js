@@ -19,12 +19,12 @@ const T = new Twitter(config);
    * @param String mediaId    Reference to media object being uploaded
    * @return Promise resolving to String mediaId (for chaining)
    */
-  function appendUpload (mediaId, mediaData) {
+  function appendUpload (mediaId, mediaDataBin, index) {
     return makePost('media/upload', {
       command      : 'APPEND',
       media_id     : mediaId,
-      media_data   : mediaData,
-      segment_index: 0
+      media   : mediaDataBin,
+      segment_index: index
     }).then(data => mediaId);
   }
 
@@ -37,7 +37,10 @@ const T = new Twitter(config);
     return makePost('media/upload', {
       command : 'FINALIZE',
       media_id: mediaId
-    }).then(data => mediaId);
+    }).then(data => mediaId).catch((err) => {
+      console.log(`Error in finalizing`);
+      console.log(err)
+    });
   }
 
   /**
@@ -49,6 +52,7 @@ const T = new Twitter(config);
   function makePost (endpoint, params) {
     return new Promise((resolve, reject) => {
       T.post(endpoint, params, (error, data, response) => {
+        console.log(params)
         if (error) {
           reject(error);
         } else {
