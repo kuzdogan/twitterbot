@@ -21,9 +21,9 @@ connection.once('open', function() {
 
   var mongoDriver = mongoose.mongo;
   gfs = new Gridfs(connection.db, mongoDriver);
-  // writeImageInPath(IMAGE_PATH);
+  writeImageInPath(IMAGE_PATH);
   // writeMediaInPath(GIF_PATH);
-  writeMediaInPath(VIDEO_PATH);
+  // writeMediaInPath(VIDEO_PATH);
 });
 /**
  * Writes the images in a directory to the database
@@ -78,7 +78,7 @@ function writeImageInPath(IMAGE_PATH) {
         nextNum++;
         nextName = base.slice(0, -1) + nextNum + '.' + ext;
       }
-      newScene.scenes = imgArr;
+      newScene.medias = imgArr;
       newScene.posted = false;
       newScene.save();
       console.log('Saved scene')
@@ -115,7 +115,7 @@ function writeMediaInPath(MEDIA_PATH) {
         fs.createReadStream(filePath).pipe(writestream);
         mediaArr.push(newMedia);
         
-        newScene.scenes = mediaArr;
+        newScene.medias = mediaArr;
         newScene.posted = false;
         newScene.save()
           .then( () => console.log('Saved scene ' + fileName) )
