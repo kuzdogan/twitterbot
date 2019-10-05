@@ -24,16 +24,12 @@ connection.once('open', function() {
 getRandomScene().then( (scene) => {
   let length = scene.medias.length;
   console.log('Scene length is: ' + length);
-  if (length == 1) {
-    postSceneWithSingleMedia(scene);
-  } else {
-    postSceneWithMultipleImages(scene);
-  }
+  postSceneWithMedia(scene);
 })
 
 
 /**
- * @function to get a random scene
+ * Function to get a random scene
  * Looks at the size of the scene collection that are not posted yet
  * and draws a random unposted post.
  * 
@@ -43,40 +39,25 @@ function getRandomScene() {
   return SceneModel.countDocuments({posted: false}).then( (count) => {
     // Get a random entry
     // let random = Math.floor(Math.random() * count)
-    let random = 7
-    // let random = 1;
+    // let random = 7
+    let random = 1;
     console.log('Random: ' + random);
     return SceneModel.findOne({posted: false}).skip(random);
   });
 }
 
-
 /**
- * @function postSceneWithSingleMedia 
+ * Takes a scene with one or more media and posts it using read streams.
+ * Uses @function twitterUtils.uploadSingleMediaFromStream to upload files and get mediaIds.
+ * Finally creates a Twitter status with @function twitterUtils.makepost with the status object 
+ * which has the @key media_ids as the ids of uploaded media, seperated by commas.
  * @param {Array} Array of scenes
- * Takes a scene and posts it using read streams.
- * As files themselves are not stored in the scene object, finds the file in the GridFS Store.
- * Streams the file in chunks and sends every chunk with twitter /upload endpoint 
- * with APPEND method using @function twitterUtils.appendUpload.
- */
-function postSceneWithSingleMedia(scene) {
-  let media = scene.medias[0]; // Has only one media in the array
-  twitterUtils.uploadSingleMediaFromStream(media, gfs).then( (mediaId) => {
-    console.log(`Finalized, media id is: ${mediaId}`);
-    // Make post request on new tweet endpoint. 
-    let status = {
-      media_ids: mediaId // Pass the media id string
-    }
-    twitterUtils.makePost('statuses/update', status).then( () => {
-      console.log('Sent a Tweet!')
-    })
-  }).catch( (err) => {
-    console.log(err);
-  })
-}
-
-function postSceneWithMultipleImages(scene) {
+ * 
+ * */
+function postSceneWithMedia(scene) {
   mediaIdsPromises = [];
+
+  // Iterate through all the scenes
   for (let i = 0; i < scene.medias.length; i++) {
     let media = scene.medias[i];
     let promise = twitterUtils.uploadSingleMediaFromStream(media, gfs)

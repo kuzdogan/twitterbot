@@ -63,11 +63,16 @@ const T = new Twitter(config);
   }
 
   /**
-   * Upload a media in chunks from a readStream (e.g. GridFS readStream).
-   * @param {String} mediaType - 'image/jpg' or 'video/mp4' etc.
-   * @param {Number} mediaSize - media size in bytes
-   * @param {Stream} readStream - stream that media is read from
-   * @returns {Promise} Promise- resolving to a mediaId
+   * Upload a single media in chunks from a readStream (e.g. GridFS readStream).
+   * 
+   * First finds the file in GridFS to retrieve metadata. 
+   * Starts the upload to get a mediaId from Twitter with @function initUpload .
+   * Reads from the GridFS stream and uploads each chunk with @function appendUpload .
+   * Once all chunk uploads are resolved, finalizes the upload with @function finalizeUpload .
+   *  
+   * @param {Object} media object retrieved from the DB
+   * @param {Object} gfs to read the file from GridFS in Stream
+   * @returns {Promise} Promise - resolving to a mediaId
    */
   function uploadSingleMediaFromStream(media, gfs) {
     let mediaType = media.mediaType;
@@ -83,7 +88,7 @@ const T = new Twitter(config);
 
         console.log(`File length is: ${file.length}`);
         mediaSize = file.length;
-        let readStream = gfs.createReadStream({
+        let readStream = gfs.createReadStream({ // Uses Node Stream type
           filename: fileName
         });
         // Upload media from the stream.
@@ -91,9 +96,10 @@ const T = new Twitter(config);
           let promiseArr= []; // Store each chunk upload as promises. 
           let segmentIndex = 0; // Index of each chunk of the file.
 
-          readStream.on('data', (chunk) => {
+          // Subscribe to data flow. This automatically starts retrieving data.
+          readStream.on('data', (chunk) => { 
             console.log('got %d bytes of data', chunk.length);
-            promiseArr.push(appendUpload(mediaId, chunk, segmentIndex++));
+            promiseArr.push(appendUpload(mediaId, chunk, segmentIndex++)); 
           });
 
           // When stream finishes start uploading.
@@ -112,18 +118,6 @@ const T = new Twitter(config);
    
   }
 
-    /**
-   * @function to upload a media to the Twitter server
-   * @param String mediaType  'image/jpg' or 'video/mp4' etc.
-   * @param Number mediaSize  media size in bytes
-   * @param String byte data of the media
-   * @returns {Promise} resolving to a mediaId
-   */
-  function uploadSingleMedia(mediaType, mediaSize, mediaData) {
-    return initUpload(mediaSize, mediaType) // Declare that you wish to upload some media
-    .then( (mediaId) => appendUpload(mediaId, mediaData)) // Send the data for the media
-    .then(finalizeUpload) // Declare that you are done uploading chunks
-  }
   module.exports = {
     initUpload, appendUpload, finalizeUpload, makePost, uploadSingleMedia, uploadSingleMediaFromStream
   }
