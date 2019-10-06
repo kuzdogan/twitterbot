@@ -1,12 +1,10 @@
-const path = require('path');
 const mongoose = require('mongoose');
 const SceneModel = require('./models/Scene').SceneModel;
 const twitterUtils = require('./twitter_utils');
 const Gridfs = require('gridfs-stream');
-var schedule = require('node-schedule');
+const schedule = require('node-schedule');
 
 const DB_NAME = 'test';
-const IMAGE_PATH = path.join(__dirname, 'assets', 'images');
 const DB_URL = 'mongodb://localhost/' + DB_NAME;
 
 
@@ -21,13 +19,16 @@ connection.once('open', function() {
   gfs = new Gridfs(connection.db, mongoDriver);
 });
 
-// Get a random scene and post it.
-getRandomScene().then( (scene) => {
-  let length = scene.medias.length;
-  console.log('Scene length is: ' + length);
-  // postSceneWithMedia(scene);
-})
 
+
+var j = schedule.scheduleJob('42 * * * * *', function(){
+  // Get a random scene and post it.
+  getRandomScene().then( (scene) => {
+    let length = scene.medias.length;
+    console.log('Scene length is: ' + length);
+    postSceneWithMedia(scene);
+  })
+});
 
 /**
  * Function to get a random scene
@@ -38,10 +39,15 @@ getRandomScene().then( (scene) => {
  */
 function getRandomScene() {
   return SceneModel.countDocuments({posted: false}).then( (count) => {
+    if (count == 0) { // If no unposted scene found, terminate process.
+      console.log('No unposted scene found');
+      console.log('Terminating process');
+      process.exit();
+    }
     // Get a random entry
-    // let random = Math.floor(Math.random() * count)
+    let random = Math.floor(Math.random() * count)
     // let random = 7
-    let random = 1;
+    // let random = 1;
     console.log('Random: ' + random);
     return SceneModel.findOne({posted: false}).skip(random);
   });
@@ -70,8 +76,10 @@ function postSceneWithMedia(scene) {
     let status = {
       media_ids: mediaIdsStr // Pass the media id string
     }
-    twitterUtils.makePost('statuses/update', status).then( () =>
-      console.log('Sent a tweet with multiple images!')
-    );
+    twitterUtils.makePost('statuses/update', status).then( () => {
+      console.log('Sent a tweet!');
+      scene.posted = true;
+      scene.save().then(console.log(`Updated the document`));
+    });
   })
 }
