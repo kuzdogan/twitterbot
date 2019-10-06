@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const SceneModel = require('./models/Scene').SceneModel;
 const twitterUtils = require('./twitter_utils');
 const Gridfs = require('gridfs-stream');
+var schedule = require('node-schedule');
 
 const DB_NAME = 'test';
 const IMAGE_PATH = path.join(__dirname, 'assets', 'images');
@@ -24,7 +25,7 @@ connection.once('open', function() {
 getRandomScene().then( (scene) => {
   let length = scene.medias.length;
   console.log('Scene length is: ' + length);
-  postSceneWithMedia(scene);
+  // postSceneWithMedia(scene);
 })
 
 

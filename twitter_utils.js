@@ -119,5 +119,5 @@ const T = new Twitter(config);
   }
 
   module.exports = {
-    initUpload, appendUpload, finalizeUpload, makePost, uploadSingleMedia, uploadSingleMediaFromStream
+    initUpload, appendUpload, finalizeUpload, makePost, uploadSingleMediaFromStream
   }
