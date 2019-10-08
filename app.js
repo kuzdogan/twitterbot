@@ -46,8 +46,6 @@ function getRandomScene() {
     }
     // Get a random entry
     let random = Math.floor(Math.random() * count)
-    // let random = 7
-    // let random = 1;
     console.log('Random: ' + random);
     return SceneModel.findOne({posted: false}).skip(random);
   });
