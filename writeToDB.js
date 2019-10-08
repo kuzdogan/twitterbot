@@ -22,15 +22,11 @@ console.log("Connected!")
 var mongoDriver = mongoose.mongo;
 gfs = new Gridfs(connection.db, mongoDriver);
 writeImageInPath(IMAGE_PATH).then( () => {
-  console.log('Finished Writing to DB');
-  process.exit();
+  writeMediaInPath(GIF_PATH).then( () => {
+    console.log('Finished Writing to DB');
+    process.exit();
+  })
 })
-  // writeImageInPath(IMAGE_PATH)
-  // .then( (result) =>{
-  //   console.log(result);
-  //   writeMediaInPath(GIF_PATH);
-  // })
-  
   // writeMediaInPath(VIDEO_PATH);
 
 });
@@ -42,30 +38,31 @@ writeImageInPath(IMAGE_PATH).then( () => {
  */
 function writeImageInPath(IMAGE_PATH) {
   console.log(IMAGE_PATH)
-  let promises = [];
+  let promises = []; // Promises to be resolved for uploading images.
   return new Promise((resolve, reject) => {
     fs.readdir(IMAGE_PATH, (err, files) => {
       console.log(`Read the Directory`);
-      // for (let i = 0; i < 2; i++) {
       for (let i = 0; i < files.length; i++) {
         let filePath = path.join(IMAGE_PATH, files[i])
         let fileName = files[i];
         // Create a scene
         let newScene = new SceneModel();
         console.log('Adding scene')
-        let imgArr = [] // Hold images in an array
+        let imgArr = [] // Hold images/media in an array
         
         // Add first Image by default
         let newImage = new MediaModel();
         console.log('Adding image ' + fileName)
         newImage.name = files[i];
-        // newImage.data = fs.readFileSync(filePath).toString('base64');
-        let streamPromise = writeWithStream(filePath, fileName)
-        promises.push(streamPromise);
         let base = path.parse(filePath).name
         let ext = path.parse(filePath).ext
         newImage.mediaType = 'image/' + ext.slice(1);
         imgArr.push(newImage);
+
+        // Write image to GridFS
+        let streamPromise = writeWithStream(filePath, fileName)
+        promises.push(streamPromise);
+        
     
         // Checking next image
         let nextNum = 2 // 22-2
@@ -82,7 +79,8 @@ function writeImageInPath(IMAGE_PATH) {
           console.log('Adding image ' + fileName)
           console.log(`i is ${i}`);
           subImage.name = files[i];
-          // subImage.data = fs.readFileSync(filePath).toString('base64');
+          
+          // Write image to GridFS
           let streamPromise2 = writeWithStream(filePath, fileName);
           promises.push(streamPromise2);
           ext = path.extname(filePath)
@@ -96,57 +94,67 @@ function writeImageInPath(IMAGE_PATH) {
         let savePromise = newScene.save().then(console.log(`Saved Scene ${i}`));
         promises.push(savePromise);
       }
-    console.log(promises)
-    Promise.all(promises).then(()=>{
+
+      Promise.all(promises).then(()=>{
       console.log(`Resolved`);
-      resolve();
+      resolve(); // Resolve the returning Promise.
     }).catch((err) => reject(err))
     })
   })
 }
 
+/**
+ * Writes media (gif, videos) to the database
+ * Diffent than @function writeImageInPath assumes consequtive file naming: 1.gif, 2.gif...
+ * 
+ * @param {String} MEDIA_PATH 
+ */
 function writeMediaInPath(MEDIA_PATH) {
-  let promises = [];
-  fs.readdir(MEDIA_PATH, (err, files) => {
-    for (let i = 0; i < files.length; i++) {
-      let filePath = path.join(MEDIA_PATH, files[i])
-      let fileName = files[i];
-      // Create a scene
-      let newScene = new SceneModel();
-      console.log('Adding scene ' + fileName)
-      let mediaArr = []
-      // Add first Image by default
-      let newMedia = new MediaModel();
-      let base = path.parse(filePath).name
-      let ext = path.parse(filePath).ext
+  let promises = []; // Promises to be resolved for uploading images.
+  return new Promise((resolve, reject) => {
+    fs.readdir(MEDIA_PATH, (err, files) => {
+      console.log(`Read the Directory`);
+      for (let i = 0; i < files.length; i++) {
+        let filePath = path.join(MEDIA_PATH, files[i])
+        let fileName = files[i];
+        // Create a scene
+        let newScene = new SceneModel();
+        console.log('Adding scene')
+        let mediaArr = [] // Hold images/media in an array
+        
+        // Add first Image by default
+        let newImage = new MediaModel();
+        console.log('Adding image ' + fileName)
+        newImage.name = files[i];
+        let base = path.parse(filePath).name
+        let ext = path.parse(filePath).ext
+        newImage.mediaType = 'image/' + ext.slice(1);
+        mediaArr.push(newImage);
 
-      // Write Media Type
-      if (ext === '.gif' || ext === '.jpg' || ext === '.jpeg' || ext === '.png')
-        newMedia.mediaType = 'image/' + ext.slice(1);
-      else if (ext === '.mp4')
-        newMedia.mediaType = 'video/' + ext.slice(1);
-      else throw new Error('Media type error')
+        // Write image to GridFS
+        let streamPromise = writeWithStream(filePath, fileName);
+        promises.push(streamPromise);
+        newScene.medias = mediaArr;
+        newScene.posted = false;
+        let savePromise = newScene.save().then(console.log(`Saved Scene ${i}`));
+        promises.push(savePromise);
+      }
 
-      console.log('Adding new ' + ext)
-      newMedia.name = files[i];
-      let writestream = gfs.createWriteStream({ filename: fileName });
-      fs.createReadStream(filePath).pipe(writestream);
-      mediaArr.push(newMedia);
-      
-      newScene.medias = mediaArr;
-      newScene.posted = false;
-      let savePromise = newScene.save()
-        .then( () => console.log('Saved scene ' + fileName) )
-        .catch( (err) => {
-          console.log('Error saving media ' + fileName);
-          console.log(err);
-        })
-      promises.push(savePromise);
-    }
+      Promise.all(promises).then(()=>{
+      console.log(`Resolved`);
+      resolve(); // Resolve the returning Promise.
+    }).catch((err) => reject(err))
+    })
   })
-  return Promise.all(promises);
 }
 
+/**
+ * Function to write media to the GridFs.
+ * 
+ * @param {String} filePath 
+ * @param {String} fileName
+ * @returns {Promise} Promise that resolves when writing operation is complete. 
+ */
 function writeWithStream(filePath, fileName) {
   return new Promise( (resolve, reject) => {
     let writestream = gfs.createWriteStream({ filename: fileName });
