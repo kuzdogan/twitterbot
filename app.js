@@ -20,16 +20,35 @@ connection.once('open', function() {
 });
 
 
-
-var j = schedule.scheduleJob('42 * * * * *', function(){
+// Schedule a tweet every day at 8am.
+schedule.scheduleJob('8 * * *', function(){
   // Get a random scene and post it.
   getRandomScene().then( (scene) => {
     let length = scene.medias.length;
-    console.log('Scene length is: ' + length);
     postSceneWithMedia(scene);
   })
 });
-
+schedule.scheduleJob('12 * * *', function(){
+  // Get a random scene and post it.
+  getRandomScene().then( (scene) => {
+    let length = scene.medias.length;
+    postSceneWithMedia(scene);
+  })
+});
+schedule.scheduleJob('16 * * *', function(){
+  // Get a random scene and post it.
+  getRandomScene().then( (scene) => {
+    let length = scene.medias.length;
+    postSceneWithMedia(scene);
+  })
+});
+schedule.scheduleJob('20 * * *', function(){
+  // Get a random scene and post it.
+  getRandomScene().then( (scene) => {
+    let length = scene.medias.length;
+    postSceneWithMedia(scene);
+  })
+});
 /**
  * Function to get a random scene
  * Looks at the size of the scene collection that are not posted yet
