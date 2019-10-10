@@ -3,9 +3,11 @@ const SceneModel = require('./models/Scene').SceneModel;
 const twitterUtils = require('./twitter_utils');
 const Gridfs = require('gridfs-stream');
 const schedule = require('node-schedule');
+const config = require('./config.js');
 
-const DB_NAME = 'test';
-const DB_URL = 'mongodb://localhost/' + DB_NAME;
+const DB_NAME = 'sifirbir';
+const DB_URL = 'mongodb+srv://' + config.db_user + ':' + config.db_password 
+  + '@' + config.db_url + DB_NAME;
 
 
 // Connect to db
@@ -21,34 +23,35 @@ connection.once('open', function() {
 
 
 // Schedule a tweet every day at 8am.
-schedule.scheduleJob('8 * * *', function(){
+schedule.scheduleJob('8 * * * * *', function(){
   // Get a random scene and post it.
   getRandomScene().then( (scene) => {
     let length = scene.medias.length;
     postSceneWithMedia(scene);
   })
 });
-schedule.scheduleJob('12 * * *', function(){
+schedule.scheduleJob('38 * * * * *', function(){
   // Get a random scene and post it.
   getRandomScene().then( (scene) => {
     let length = scene.medias.length;
     postSceneWithMedia(scene);
   })
 });
-schedule.scheduleJob('16 * * *', function(){
-  // Get a random scene and post it.
-  getRandomScene().then( (scene) => {
-    let length = scene.medias.length;
-    postSceneWithMedia(scene);
-  })
-});
-schedule.scheduleJob('20 * * *', function(){
-  // Get a random scene and post it.
-  getRandomScene().then( (scene) => {
-    let length = scene.medias.length;
-    postSceneWithMedia(scene);
-  })
-});
+// schedule.scheduleJob('16 * * *', function(){
+//   // Get a random scene and post it.
+//   getRandomScene().then( (scene) => {
+//     let length = scene.medias.length;
+//     postSceneWithMedia(scene);
+//   })
+// });
+// schedule.scheduleJob('20 * * *', function(){
+//   // Get a random scene and post it.
+//   getRandomScene().then( (scene) => {
+//     let length = scene.medias.length;
+//     postSceneWithMedia(scene);
+//   })
+// });
+
 /**
  * Function to get a random scene
  * Looks at the size of the scene collection that are not posted yet

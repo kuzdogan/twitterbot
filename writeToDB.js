@@ -4,11 +4,15 @@ const mongoose = require('mongoose');
 const Gridfs = require('gridfs-stream');
 const SceneModel =  require('./models/Scene').SceneModel;
 const MediaModel =  require('./models/Media').MediaModel;
+const config = require('./config.js');
 
 const IMAGE_PATH = path.join(__dirname, 'assets', 'images');
 const GIF_PATH = path.join(__dirname, 'assets', 'gifs');
 const VIDEO_PATH = path.join(__dirname, 'assets', 'videos');
-const DB_URL = 'mongodb://localhost/test';
+
+const DB_NAME = config.db_name;
+const DB_URL = 'mongodb+srv://' + config.db_user + ':' + config.db_password + '@' + config.db_url + DB_NAME;
+
 var gfs;
 // Connect to db
 console.log("Connecting to db")
@@ -42,7 +46,8 @@ function writeImageInPath(IMAGE_PATH) {
   return new Promise((resolve, reject) => {
     fs.readdir(IMAGE_PATH, (err, files) => {
       console.log(`Read the Directory`);
-      for (let i = 0; i < files.length; i++) {
+      // for (let i = 0; i < files.length; i++) {
+      for (let i = 0; i < 100; i++) {
         let filePath = path.join(IMAGE_PATH, files[i])
         let fileName = files[i];
         // Create a scene
@@ -114,7 +119,8 @@ function writeMediaInPath(MEDIA_PATH) {
   return new Promise((resolve, reject) => {
     fs.readdir(MEDIA_PATH, (err, files) => {
       console.log(`Read the Directory`);
-      for (let i = 0; i < files.length; i++) {
+      // for (let i = 0; i < files.length; i++) {
+      for (let i = 0; i < 1; i++) {
         let filePath = path.join(MEDIA_PATH, files[i])
         let fileName = files[i];
         // Create a scene
