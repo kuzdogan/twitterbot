@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/kuzdogan/twitterbot#readme",
   "dependencies": {
+    "dotenv": "^8.1.0",
     "express": "^4.17.1",
     "gridfs-stream": "^1.1.1",
     "mongoose": "^5.6.0",
