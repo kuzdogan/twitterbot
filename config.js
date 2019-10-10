@@ -1,5 +1,4 @@
 // config.js
-console.log(process.env);
 
 module.exports = {
   consumer_key: process.env.CONSUMER_KEY,
