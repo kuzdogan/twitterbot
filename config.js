@@ -1,10 +1,7 @@
 // config.js
 const dotenv = require('dotenv');
 let result = dotenv.config();
-if (result.error) {
-  throw result.error
-}
-// Get environment vars and write into a config.js
+
 module.exports = {
   consumer_key: process.env.CONSUMER_KEY,
   consumer_secret: process.env.CONSUMER_SECRET,
