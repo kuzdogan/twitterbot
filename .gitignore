@@ -3,3 +3,4 @@ config.js
 /assets
 config2.js
 image_array
+.env
