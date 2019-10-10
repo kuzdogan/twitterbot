@@ -1,6 +1,5 @@
 // config.js
-const dotenv = require('dotenv');
-let result = dotenv.config();
+console.log(process.env);
 
 module.exports = {
   consumer_key: process.env.CONSUMER_KEY,
