@@ -12,15 +12,3 @@ module.exports = {
   db_name: process.env.DB_NAME,
   db_url: process.env.DB_URL,
 };
-
-module.exports = {
-    consumer_key: 'z1Hb1Sm7ld03NT4RwgeExjFfZ',
-    consumer_secret: 'jEkOGc5aboXpCYCfmYsfIUNLM28KuYM31zU0szscGgweb9ZUA7',
-    access_token_key: '1036541782631301121-RdcKSduvvvVqz1uQYqdKMuuBdrv6LN',
-    access_token_secret: 'sml0Px9nvBTjEIImEi1mAR7hHE1dq6GoYBuI7FRKOJbk1',
-    db_password: 'vZAxMxQ8x6T7zh',
-    db_user: 'kuzdogan',
-    db_name: 'sifirbir',
-    db_url: 'cluster0-2is6r.mongodb.net/'
-  }
-  
