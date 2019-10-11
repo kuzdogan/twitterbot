@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
-    "dev": "node -r dotenv/config app.js"
+    "dev": "node -r dotenv/config app.js",
+    "dev-write": "node -r dotenv/config writeToDB.js"
   },
   "repository": {
     "type": "git",

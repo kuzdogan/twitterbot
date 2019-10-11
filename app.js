@@ -23,14 +23,14 @@ connection.once('open', function() {
 
 
 // Schedule a tweet every day at 8am.
-schedule.scheduleJob('8 * * * * *', function(){
+schedule.scheduleJob('8 * * * *', function(){
   // Get a random scene and post it.
   getRandomScene().then( (scene) => {
     let length = scene.medias.length;
     postSceneWithMedia(scene);
   })
 });
-schedule.scheduleJob('38 * * * * *', function(){
+schedule.scheduleJob('38 * * * *', function(){
   // Get a random scene and post it.
   getRandomScene().then( (scene) => {
     let length = scene.medias.length;
