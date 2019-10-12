@@ -79,6 +79,7 @@ const T = new Twitter(config);
     let fileName = media.name;
     let mediaSize = 0;
 
+    console.log(media);
     return new Promise( (resolve, reject) => {
        // Retrieve the file from GridFS store
       gfs.files.findOne({filename: fileName}, (err, file) => {

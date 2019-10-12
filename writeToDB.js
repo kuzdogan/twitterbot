@@ -5,6 +5,7 @@ const Gridfs = require('gridfs-stream');
 const SceneModel =  require('./models/Scene').SceneModel;
 const MediaModel =  require('./models/Media').MediaModel;
 const config = require('./config.js');
+const cliProgress = require('cli-progress');
 
 const IMAGE_PATH = path.join(__dirname, 'assets', 'images');
 const GIF_PATH = path.join(__dirname, 'assets', 'gifs');
@@ -30,7 +31,7 @@ writeImageInPath(IMAGE_PATH).then( () => {
     process.exit();
   })
 })
-  // writeMediaInPath(VIDEO_PATH);
+// writeMediaInPath(VIDEO_PATH);
 
 });
 /**
@@ -41,12 +42,11 @@ writeImageInPath(IMAGE_PATH).then( () => {
  */
 function writeImageInPath(IMAGE_PATH) {
   console.log(IMAGE_PATH)
-  let promises = []; // Promises to be resolved for uploading images.
   return new Promise((resolve, reject) => {
-    fs.readdir(IMAGE_PATH, (err, files) => {
+    fs.readdir(IMAGE_PATH, async (err, files) => {
       console.log(`Read the Directory`);
       for (let i = 0; i < files.length; i++) {
-      // for (let i = 0; i < 1; i++) {
+      // for (let i = 0; i < 5; i++) {
         let filePath = path.join(IMAGE_PATH, files[i])
         let fileName = files[i];
         // Create a scene
@@ -64,9 +64,7 @@ function writeImageInPath(IMAGE_PATH) {
         imgArr.push(newImage);
 
         // Write image to GridFS
-        let streamPromise = writeWithStream(filePath, fileName)
-        promises.push(streamPromise);
-        
+        await writeWithStream(filePath, fileName);
     
         // Checking next image
         let nextNum = 2 // 22-2
@@ -85,8 +83,7 @@ function writeImageInPath(IMAGE_PATH) {
           subImage.name = files[i];
           
           // Write image to GridFS
-          let streamPromise2 = writeWithStream(filePath, fileName);
-          promises.push(streamPromise2);
+          await writeWithStream(filePath, fileName)
           ext = path.extname(filePath)
           subImage.mediaType = 'image/' + ext.slice(1);
           imgArr.push(subImage);
@@ -95,14 +92,11 @@ function writeImageInPath(IMAGE_PATH) {
         }
         newScene.medias = imgArr;
         newScene.posted = false;
-        let savePromise = newScene.save().then(console.log(`Saved Scene ${i}`));
-        promises.push(savePromise);
+        await newScene.save().then(console.log(`Image ${i} saved. Scenes to go: ${files.length - i}`));
       }
 
-      Promise.all(promises).then(()=>{
       console.log(`Resolved`);
       resolve(); // Resolve the returning Promise.
-    }).catch((err) => reject(err))
     })
   })
 }
@@ -114,9 +108,8 @@ function writeImageInPath(IMAGE_PATH) {
  * @param {String} MEDIA_PATH 
  */
 function writeMediaInPath(MEDIA_PATH) {
-  let promises = []; // Promises to be resolved for uploading images.
   return new Promise((resolve, reject) => {
-    fs.readdir(MEDIA_PATH, (err, files) => {
+    fs.readdir(MEDIA_PATH, async (err, files) => {
       console.log(`Read the Directory`);
       for (let i = 0; i < files.length; i++) {
       // for (let i = 0; i < 1; i++) {
@@ -137,18 +130,14 @@ function writeMediaInPath(MEDIA_PATH) {
         mediaArr.push(newImage);
 
         // Write image to GridFS
-        let streamPromise = writeWithStream(filePath, fileName);
-        promises.push(streamPromise);
+        await writeWithStream(filePath, fileName);
         newScene.medias = mediaArr;
         newScene.posted = false;
-        let savePromise = newScene.save().then(console.log(`Saved Scene ${i}`));
-        promises.push(savePromise);
+        await newScene.save().then(console.log(`Image ${i} saved. Scenes to go: ${files.length - i}`));
       }
 
-      Promise.all(promises).then(()=>{
       console.log(`Resolved`);
       resolve(); // Resolve the returning Promise.
-    }).catch((err) => reject(err))
     })
   })
 }
@@ -163,8 +152,19 @@ function writeMediaInPath(MEDIA_PATH) {
 function writeWithStream(filePath, fileName) {
   return new Promise( (resolve, reject) => {
     let writestream = gfs.createWriteStream({ filename: fileName });
-    fs.createReadStream(filePath).pipe(writestream);
+    let readstream = fs.createReadStream(filePath);
+    let stats = fs.statSync(filePath);
+    let totalBytes = stats["size"];
+    const progressBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+    progressBar.start(totalBytes, 0);
+
+    readstream.pipe(writestream);
+
+    readstream.on('data', (chunk) => {
+      progressBar.increment(chunk.length)
+    })
     writestream.on('finish', () => {
+      console.log(); // New line after progress bar
       resolve()
     })
     writestream.on('error', (error) => {

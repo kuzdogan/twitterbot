@@ -23,17 +23,16 @@ connection.once('open', function() {
 
 
 // Schedule a tweet every day at 8am.
-schedule.scheduleJob('8 * * * *', function(){
+// schedule.scheduleJob('8 * * * *', function(){
+//   // Get a random scene and post it.
+//   getRandomScene().then( (scene) => {
+//     let length = scene.medias.length;
+//     postSceneWithMedia(scene);
+//   })
+// });
+schedule.scheduleJob('38 * * * * *', function(){
   // Get a random scene and post it.
   getRandomScene().then( (scene) => {
-    let length = scene.medias.length;
-    postSceneWithMedia(scene);
-  })
-});
-schedule.scheduleJob('38 * * * *', function(){
-  // Get a random scene and post it.
-  getRandomScene().then( (scene) => {
-    let length = scene.medias.length;
     postSceneWithMedia(scene);
   })
 });
@@ -67,7 +66,8 @@ function getRandomScene() {
       process.exit();
     }
     // Get a random entry
-    let random = Math.floor(Math.random() * count)
+    // let random = Math.floor(Math.random() * count)
+    let random = 726;
     console.log('Random: ' + random);
     return SceneModel.findOne({posted: false}).skip(random);
   });
