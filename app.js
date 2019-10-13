@@ -23,33 +23,43 @@ connection.once('open', function() {
 
 
 // Schedule a tweet every day at 8am.
-// schedule.scheduleJob('8 * * * *', function(){
-//   // Get a random scene and post it.
-//   getRandomScene().then( (scene) => {
-//     let length = scene.medias.length;
-//     postSceneWithMedia(scene);
-//   })
-// });
-schedule.scheduleJob('38 * * * * *', function(){
+// s    m    h    day  m    weekday
+// *    *    *    *    *    *
+// ┬    ┬    ┬    ┬    ┬    ┬
+// │    │    │    │    │    │
+// │    │    │    │    │    └ day of week (0 - 7) (0 or 7 is Sun)
+// │    │    │    │    └───── month (1 - 12)
+// │    │    │    └────────── day of month (1 - 31)
+// │    │    └─────────────── hour (0 - 23)
+// │    └──────────────────── minute (0 - 59)
+// └───────────────────────── second (0 - 59, OPTIONAL)
+schedule.scheduleJob('8 * * *', function(){
+  // Get a random scene and post it.
+  getRandomScene().then( (scene) => {
+    let length = scene.medias.length;
+    postSceneWithMedia(scene);
+  })
+});
+schedule.scheduleJob('12 * * *', function(){
   // Get a random scene and post it.
   getRandomScene().then( (scene) => {
     postSceneWithMedia(scene);
   })
 });
-// schedule.scheduleJob('16 * * *', function(){
-//   // Get a random scene and post it.
-//   getRandomScene().then( (scene) => {
-//     let length = scene.medias.length;
-//     postSceneWithMedia(scene);
-//   })
-// });
-// schedule.scheduleJob('20 * * *', function(){
-//   // Get a random scene and post it.
-//   getRandomScene().then( (scene) => {
-//     let length = scene.medias.length;
-//     postSceneWithMedia(scene);
-//   })
-// });
+schedule.scheduleJob('16 * * *', function(){
+  // Get a random scene and post it.
+  getRandomScene().then( (scene) => {
+    let length = scene.medias.length;
+    postSceneWithMedia(scene);
+  })
+});
+schedule.scheduleJob('20 * * *', function(){
+  // Get a random scene and post it.
+  getRandomScene().then( (scene) => {
+    let length = scene.medias.length;
+    postSceneWithMedia(scene);
+  })
+});
 
 /**
  * Function to get a random scene
