@@ -33,27 +33,27 @@ connection.once('open', function() {
 // │    │    └─────────────── hour (0 - 23)
 // │    └──────────────────── minute (0 - 59)
 // └───────────────────────── second (0 - 59, OPTIONAL)
-schedule.scheduleJob('8 * * *', function(){
+schedule.scheduleJob('0 0 8 * * *', function(){
   // Get a random scene and post it.
   getRandomScene().then( (scene) => {
     let length = scene.medias.length;
     postSceneWithMedia(scene);
   })
 });
-schedule.scheduleJob('12 * * *', function(){
+schedule.scheduleJob('0 0 12 * * *', function(){
   // Get a random scene and post it.
   getRandomScene().then( (scene) => {
     postSceneWithMedia(scene);
   })
 });
-schedule.scheduleJob('16 * * *', function(){
+schedule.scheduleJob('0 0 16 * * *', function(){
   // Get a random scene and post it.
   getRandomScene().then( (scene) => {
     let length = scene.medias.length;
     postSceneWithMedia(scene);
   })
 });
-schedule.scheduleJob('20 * * *', function(){
+schedule.scheduleJob('0 0 20 * * *', function(){
   // Get a random scene and post it.
   getRandomScene().then( (scene) => {
     let length = scene.medias.length;
