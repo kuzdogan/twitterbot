@@ -22,7 +22,7 @@ connection.once('open', function() {
 });
 
 
-// Schedule a tweet every day at 8am.
+// Schedule a tweet every day at 8am. Turkey Time (UTC +3)
 // s    m    h    day  m    weekday
 // *    *    *    *    *    *
 // ┬    ┬    ┬    ┬    ┬    ┬
@@ -33,27 +33,27 @@ connection.once('open', function() {
 // │    │    └─────────────── hour (0 - 23)
 // │    └──────────────────── minute (0 - 59)
 // └───────────────────────── second (0 - 59, OPTIONAL)
-schedule.scheduleJob('0 0 8 * * *', function(){
+schedule.scheduleJob('0 0 5 * * *', function(){
   // Get a random scene and post it.
   getRandomScene().then( (scene) => {
     let length = scene.medias.length;
     postSceneWithMedia(scene);
   })
 });
-schedule.scheduleJob('0 0 12 * * *', function(){
+schedule.scheduleJob('0 0 9 * * *', function(){
   // Get a random scene and post it.
   getRandomScene().then( (scene) => {
     postSceneWithMedia(scene);
   })
 });
-schedule.scheduleJob('0 0 16 * * *', function(){
+schedule.scheduleJob('0 0 13 * * *', function(){
   // Get a random scene and post it.
   getRandomScene().then( (scene) => {
     let length = scene.medias.length;
     postSceneWithMedia(scene);
   })
 });
-schedule.scheduleJob('0 0 20 * * *', function(){
+schedule.scheduleJob('0 0 17 * * *', function(){
   // Get a random scene and post it.
   getRandomScene().then( (scene) => {
     let length = scene.medias.length;
