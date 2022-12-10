@@ -26,7 +26,7 @@
   "homepage": "https://github.com/kuzdogan/twitterbot#readme",
   "dependencies": {
     "cli-progress": "^3.3.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "gridfs-stream": "^1.1.1",
     "mongoose": "^5.6.0",
     "node-schedule": "^1.3.2",
